@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ministérios - Agenda de Serviços CCB</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Navbar superior -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">CCB Administração Ituiutaba</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="events.html"><i class="fas fa-calendar-alt"></i> Eventos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="ministerios.html"><i class="fas fa-users"></i> Ministérios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="congregacoes.html"><i class="fas fa-church"></i> Congregações</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="coletas.html"><i class="fas fa-hand-holding-usd"></i> Coletas</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle me-1"></i> <span id="userName">Usuário</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="#" id="profileLink"><i class="fas fa-id-card me-2"></i>Perfil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutBtn"><i class="fas fa-sign-out-alt me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo principal -->
+    <div class="container-fluid mt-5 pt-3">
+        <div class="row">
+            <!-- Sidebar (visível apenas em telas grandes) -->
+            <div class="col-lg-2 d-none d-lg-block sidebar bg-light">
+                <div class="position-sticky pt-4">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="dashboard.html">
+                                <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="events.html">
+                                <i class="fas fa-calendar-alt me-2"></i> Eventos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="ministerios.html">
+                                <i class="fas fa-users me-2"></i> Ministérios
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="congregacoes.html">
+                                <i class="fas fa-church me-2"></i> Congregações
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="coletas.html">
+                                <i class="fas fa-hand-holding-usd me-2"></i> Coletas
+                            </a>
+                        </li>
+                        <li class="nav-item mt-4">
+                            <a class="nav-link text-danger" href="#" id="sidebarLogout">
+                                <i class="fas fa-sign-out-alt me-2"></i> Sair
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Conteúdo principal -->
+            <main class="col-lg-10 ms-sm-auto px-md-4 py-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Gerenciamento de Ministérios</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="exportCSV">
+                                <i class="fas fa-file-csv me-1"></i> Exportar CSV
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="exportPDF">
+                                <i class="fas fa-file-pdf me-1"></i> Exportar PDF
+                            </button>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addMinisterioModal">
+                            <i class="fas fa-plus me-1"></i> Novo Ministério
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cards de Ministérios -->
+                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mb-4" id="ministeriosCards">
+                    <!-- Cards serão carregados via JavaScript -->
+                    <div class="col">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Carregando...</span>
+                                </div>
+                                <p class="mt-2">Carregando ministérios...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabela de Ministérios -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Lista de Ministérios</h5>
+                                <div class="input-group w-50">
+                                    <input type="text" class="form-control" placeholder="Buscar ministério..." id="searchMinisterio">
+                                    <button class="btn btn-outline-secondary" type="button" id="searchMinisterioBtn">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Nome</th>
+                                                <th>Descrição</th>
+                                                <th>Responsável</th>
+                                                <th>Membros</th>
+                                                <th>Criado em</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="ministeriosTable">
+                                            <!-- Dados serão carregados via JavaScript -->
+                                            <tr>
+                                                <td colspan="6" class="text-center">Carregando ministérios...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Paginação -->
+                                <nav aria-label="Navegação de página" class="mt-4">
+                                    <ul class="pagination justify-content-center" id="ministeriosPagination">
+                                        <!-- Paginação será gerada via JavaScript -->
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal para Adicionar Ministério -->
+    <div class="modal fade" id="addMinisterioModal" tabindex="-1" aria-labelledby="addMinisterioModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="addMinisterioModalLabel">Adicionar Novo Ministério</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addMinisterioForm">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label for="ministerioNome" class="form-label">Nome do Ministério</label>
+                                <input type="text" class="form-control" id="ministerioNome" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="ministerioDescricao" class="form-label">Descrição</label>
+                                <textarea class="form-control" id="ministerioDescricao" rows="3" required></textarea>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="ministerioResponsavel" class="form-label">Responsável</label>
+                                <select class="form-select" id="ministerioResponsavel" required>
+                                    <option value="">Selecione um responsável</option>
+                                    <!-- Opções serão carregadas via JavaScript -->
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="ministerioMembros" class="form-label">Membros</label>
+                                <select class="form-select" id="ministerioMembros" multiple>
+                                    <!-- Opções serão carregadas via JavaScript -->
+                                </select>
+                                <small class="form-text text-muted">Segure Ctrl para selecionar múltiplos membros</small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveMinisterioBtn">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Ministério -->
+    <div class="modal fade" id="editMinisterioModal" tabindex="-1" aria-labelledby="editMinisterioModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editMinisterioModalLabel">Editar Ministério</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editMinisterioForm">
+                        <input type="hidden" id="editMinisterioId">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label for="editMinisterioNome" class="form-label">Nome do Ministério</label>
+                                <input type="text" class="form-control" id="editMinisterioNome" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="editMinisterioDescricao" class="form-label">Descrição</label>
+                                <textarea class="form-control" id="editMinisterioDescricao" rows="3" required></textarea>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="editMinisterioResponsavel" class="form-label">Responsável</label>
+                                <select class="form-select" id="editMinisterioResponsavel" required>
+                                    <option value="">Selecione um responsável</option>
+                                    <!-- Opções serão carregadas via JavaScript -->
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="editMinisterioMembros" class="form-label">Membros</label>
+                                <select class="form-select" id="editMinisterioMembros" multiple>
+                                    <!-- Opções serão carregadas via JavaScript -->
+                                </select>
+                                <small class="form-text text-muted">Segure Ctrl para selecionar múltiplos membros</small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger me-auto" id="deleteMinisterioBtn">Excluir</button>
+                    <button type="button" class="btn btn-primary" id="updateMinisterioBtn">Atualizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">Confirmar Exclusão</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja excluir este ministério? Esta ação não pode ser desfeita.</p>
+                    <input type="hidden" id="deleteMinisterioId">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Visualização de Ministério -->
+    <div class="modal fade" id="viewMinisterioModal" tabindex="-1" aria-labelledby="viewMinisterioModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="viewMinisterioModalLabel">Detalhes do Ministério</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Nome:</strong> <span id="viewMinisterioNome"></span></p>
+                            <p><strong>Responsável:</strong> <span id="viewMinisterioResponsavel"></span></p>
+                            <p><strong>Criado em:</strong> <span id="viewMinisterioCreatedAt"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Total de Membros:</strong> <span id="viewMinisterioTotalMembros"></span></p>
+                            <p><strong>Eventos Relacionados:</strong> <span id="viewMinisterioTotalEventos"></span></p>
+                        </div>
+                        <div class="col-md-12 mt-3">
+                            <p><strong>Descrição:</strong></p>
+                            <p id="viewMinisterioDescricao" class="border p-2 rounded bg-light"></p>
+                        </div>
+                        <div class="col-md-12 mt-3">
+                            <p><strong>Membros:</strong></p>
+                            <ul id="viewMinisterioMembros" class="list-group">
+                                <!-- Lista de membros será carregada via JavaScript -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" id="editMinisterioFromViewBtn">Editar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="container text-center">
+            <span class="text-muted">© 2025 CCB Administração Ituiutaba. Todos os direitos reservados.</span>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle com Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Firebase App (a base) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <!-- Firebase Auth -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <!-- Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <!-- Scripts personalizados -->
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ministerios.js"></script>
+</body>
+</html>

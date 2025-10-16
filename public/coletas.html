@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coletas - Agenda de Serviços CCB</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Navbar superior -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">CCB Administração Ituiutaba</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="events.html"><i class="fas fa-calendar-alt"></i> Eventos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="ministerios.html"><i class="fas fa-users"></i> Ministérios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="congregacoes.html"><i class="fas fa-church"></i> Congregações</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="coletas.html"><i class="fas fa-hand-holding-usd"></i> Coletas</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle me-1"></i> <span id="userName">Usuário</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="#" id="profileLink"><i class="fas fa-id-card me-2"></i>Perfil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutBtn"><i class="fas fa-sign-out-alt me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo principal -->
+    <div class="container-fluid mt-5 pt-3">
+        <div class="row">
+            <!-- Sidebar (visível apenas em telas grandes) -->
+            <div class="col-lg-2 d-none d-lg-block sidebar bg-light">
+                <div class="position-sticky pt-4">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="dashboard.html">
+                                <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="events.html">
+                                <i class="fas fa-calendar-alt me-2"></i> Eventos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="ministerios.html">
+                                <i class="fas fa-users me-2"></i> Ministérios
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="congregacoes.html">
+                                <i class="fas fa-church me-2"></i> Congregações
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="coletas.html">
+                                <i class="fas fa-hand-holding-usd me-2"></i> Coletas
+                            </a>
+                        </li>
+                        <li class="nav-item mt-4">
+                            <a class="nav-link text-danger" href="#" id="sidebarLogout">
+                                <i class="fas fa-sign-out-alt me-2"></i> Sair
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Conteúdo principal -->
+            <main class="col-lg-10 ms-sm-auto px-md-4 py-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Gerenciamento de Coletas</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="exportCSV">
+                                <i class="fas fa-file-csv me-1"></i> Exportar CSV
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="exportPDF">
+                                <i class="fas fa-file-pdf me-1"></i> Exportar PDF
+                            </button>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addColetaModal">
+                            <i class="fas fa-plus me-1"></i> Nova Coleta
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Resumo de Coletas -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Coletado (Mês)</h5>
+                                <h2 class="text-primary" id="totalColetadoMes">R$ 0,00</h2>
+                                <p class="text-muted mb-0"><span id="percentualMes">0%</span> do previsto</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Previsto (Mês)</h5>
+                                <h2 class="text-secondary" id="totalPrevistoMes">R$ 0,00</h2>
+                                <p class="text-muted mb-0"><span id="numColetasMes">0</span> coletas previstas</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Coletado (Ano)</h5>
+                                <h2 class="text-success" id="totalColetadoAno">R$ 0,00</h2>
+                                <p class="text-muted mb-0"><span id="percentualAno">0%</span> do previsto</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Média por Evento</h5>
+                                <h2 class="text-info" id="mediaColetaEvento">R$ 0,00</h2>
+                                <p class="text-muted mb-0">Baseado nos últimos <span id="numEventosMedia">0</span> eventos</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Coletas -->
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-transparent">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">Histórico de Coletas</h5>
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button" class="btn btn-outline-secondary active" id="graficoMes">Mês</button>
+                                        <button type="button" class="btn btn-outline-secondary" id="graficoTrimestre">Trimestre</button>
+                                        <button type="button" class="btn btn-outline-secondary" id="graficoAno">Ano</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="graficoColetas" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-transparent">
+                                <h5 class="card-title mb-0">Distribuição por Tipo</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="graficoPizzaColetas" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filtros -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <form id="filterForm" class="row g-3">
+                                    <div class="col-md-3">
+                                        <label for="filterEvento" class="form-label">Evento</label>
+                                        <select class="form-select" id="filterEvento">
+                                            <option value="">Todos</option>
+                                            <!-- Opções serão carregadas via JavaScript -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="filterTipo" class="form-label">Tipo</label>
+                                        <select class="form-select" id="filterTipo">
+                                            <option value="">Todos</option>
+                                            <option value="dizimo">Dízimo</option>
+                                            <option value="oferta">Oferta</option>
+                                            <option value="especial">Especial</option>
+                                            <option value="outro">Outro</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="filterStatus" class="form-label">Status</label>
+                                        <select class="form-select" id="filterStatus">
+                                            <option value="">Todos</option>
+                                            <option value="pendente">Pendente</option>
+                                            <option value="realizada">Realizada</option>
+                                            <option value="cancelada">Cancelada</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="filterPeriodo" class="form-label">Período</label>
+                                        <select class="form-select" id="filterPeriodo">
+                                            <option value="mes">Este Mês</option>
+                                            <option value="trimestre">Este Trimestre</option>
+                                            <option value="ano">Este Ano</option>
+                                            <option value="todos">Todos</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 d-flex justify-content-end">
+                                        <button type="button" class="btn btn-secondary me-2" id="clearFilters">Limpar</button>
+                                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabela de Coletas -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-transparent">
+                                <h5 class="card-title mb-0">Lista de Coletas</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Data</th>
+                                                <th>Evento</th>
+                                                <th>Tipo</th>
+                                                <th>Valor Previsto</th>
+                                                <th>Valor Coletado</th>
+                                                <th>Status</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="coletasTable">
+                                            <!-- Dados serão carregados via JavaScript -->
+                                            <tr>
+                                                <td colspan="7" class="text-center">Carregando coletas...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Paginação -->
+                                <nav aria-label="Navegação de página" class="mt-4">
+                                    <ul class="pagination justify-content-center" id="coletasPagination">
+                                        <!-- Paginação será gerada via JavaScript -->
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal para Adicionar Coleta -->
+    <div class="modal fade" id="addColetaModal" tabindex="-1" aria-labelledby="addColetaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="addColetaModalLabel">Adicionar Nova Coleta</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addColetaForm">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label for="coletaEvento" class="form-label">Evento</label>
+                                <select class="form-select" id="coletaEvento" required>
+                                    <option value="">Selecione um evento</option>
+                                    <!-- Opções serão carregadas via JavaScript -->
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="coletaTipo" class="form-label">Tipo de Coleta</label>
+                                <select class="form-select" id="coletaTipo" required>
+                                    <option value="">Selecione o tipo</option>
+                                    <option value="dizimo">Dízimo</option>
+                                    <option value="oferta">Oferta</option>
+                                    <option value="especial">Especial</option>
+                                    <option value="outro">Outro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="coletaData" class="form-label">Data</label>
+                                <input type="date" class="form-control" id="coletaData" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="coletaValorPrevisto" class="form-label">Valor Previsto (R$)</label>
+                                <input type="number" step="0.01" min="0" class="form-control" id="coletaValorPrevisto" placeholder="0.00" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="coletaValorColetado" class="form-label">Valor Coletado (R$)</label>
+                                <input type="number" step="0.01" min="0" class="form-control" id="coletaValorColetado" placeholder="0.00">
+                                <small class="form-text text-muted">Deixe em branco se a coleta ainda não foi realizada.</small>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="coletaStatus" class="form-label">Status</label>
+                                <select class="form-select" id="coletaStatus" required>
+                                    <option value="pendente">Pendente</option>
+                                    <option value="realizada">Realizada</option>
+                                    <option value="cancelada">Cancelada</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="coletaObservacoes" class="form-label">Observações</label>
+                                <textarea class="form-control" id="coletaObservacoes" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveColetaBtn">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Coleta -->
+    <div class="modal fade" id="editColetaModal" tabindex="-1" aria-labelledby="editColetaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editColetaModalLabel">Editar Coleta</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editColetaForm">
+                        <input type="hidden" id="editColetaId">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label for="editColetaEvento" class="form-label">Evento</label>
+                                <select class="form-select" id="editColetaEvento" required>
+                                    <option value="">Selecione um evento</option>
+                                    <!-- Opções serão carregadas via JavaScript -->
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editColetaTipo" class="form-label">Tipo de Coleta</label>
+                                <select class="form-select" id="editColetaTipo" required>
+                                    <option value="">Selecione o tipo</option>
+                                    <option value="dizimo">Dízimo</option>
+                                    <option value="oferta">Oferta</option>
+                                    <option value="especial">Especial</option>
+                                    <option value="outro">Outro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editColetaData" class="form-label">Data</label>
+                                <input type="date" class="form-control" id="editColetaData" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editColetaValorPrevisto" class="form-label">Valor Previsto (R$)</label>
+                                <input type="number" step="0.01" min="0" class="form-control" id="editColetaValorPrevisto" placeholder="0.00" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editColetaValorColetado" class="form-label">Valor Coletado (R$)</label>
+                                <input type="number" step="0.01" min="0" class="form-control" id="editColetaValorColetado" placeholder="0.00">
+                                <small class="form-text text-muted">Deixe em branco se a coleta ainda não foi realizada.</small>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="editColetaStatus" class="form-label">Status</label>
+                                <select class="form-select" id="editColetaStatus" required>
+                                    <option value="pendente">Pendente</option>
+                                    <option value="realizada">Realizada</option>
+                                    <option value="cancelada">Cancelada</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="editColetaObservacoes" class="form-label">Observações</label>
+                                <textarea class="form-control" id="editColetaObservacoes" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger me-auto" id="deleteColetaBtn">Excluir</button>
+                    <button type="button" class="btn btn-primary" id="updateColetaBtn">Atualizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">Confirmar Exclusão</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja excluir esta coleta? Esta ação não pode ser desfeita.</p>
+                    <input type="hidden" id="deleteColetaId">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Recebimento de Coleta -->
+    <div class="modal fade" id="receberColetaModal" tabindex="-1" aria-labelledby="receberColetaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="receberColetaModalLabel">Registrar Recebimento</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="receberColetaForm">
+                        <input type="hidden" id="receberColetaId">
+                        <div class="mb-3">
+                            <label for="receberColetaValor" class="form-label">Valor Recebido (R$)</label>
+                            <input type="number" step="0.01" min="0" class="form-control" id="receberColetaValor" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="receberColetaData" class="form-label">Data de Recebimento</label>
+                            <input type="date" class="form-control" id="receberColetaData" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="receberColetaObservacoes" class="form-label">Observações</label>
+                            <textarea class="form-control" id="receberColetaObservacoes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" id="confirmReceberBtn">Confirmar Recebimento</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="container text-center">
+            <span class="text-muted">© 2025 CCB Administração Ituiutaba. Todos os direitos reservados.</span>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle com Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Firebase App (a base) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <!-- Firebase Auth -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <!-- Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <!-- Scripts personalizados -->
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/coletas.js"></script>
+</body>
+</html>

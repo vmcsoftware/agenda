@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos - Agenda de Serviços CCB</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Navbar superior -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">CCB Administração Ituiutaba</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="events.html"><i class="fas fa-calendar-alt"></i> Eventos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="ministerios.html"><i class="fas fa-users"></i> Ministérios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="congregacoes.html"><i class="fas fa-church"></i> Congregações</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="coletas.html"><i class="fas fa-hand-holding-usd"></i> Coletas</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle me-1"></i> <span id="userName">Usuário</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="#" id="profileLink"><i class="fas fa-id-card me-2"></i>Perfil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutBtn"><i class="fas fa-sign-out-alt me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo principal -->
+    <div class="container-fluid mt-5 pt-3">
+        <div class="row">
+            <!-- Sidebar (visível apenas em telas grandes) -->
+            <div class="col-lg-2 d-none d-lg-block sidebar bg-light">
+                <div class="position-sticky pt-4">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="dashboard.html">
+                                <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="events.html">
+                                <i class="fas fa-calendar-alt me-2"></i> Eventos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="ministerios.html">
+                                <i class="fas fa-users me-2"></i> Ministérios
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="congregacoes.html">
+                                <i class="fas fa-church me-2"></i> Congregações
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="coletas.html">
+                                <i class="fas fa-hand-holding-usd me-2"></i> Coletas
+                            </a>
+                        </li>
+                        <li class="nav-item mt-4">
+                            <a class="nav-link text-danger" href="#" id="sidebarLogout">
+                                <i class="fas fa-sign-out-alt me-2"></i> Sair
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Conteúdo principal -->
+            <main class="col-lg-10 ms-sm-auto px-md-4 py-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Gerenciamento de Eventos</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="exportCSV">
+                                <i class="fas fa-file-csv me-1"></i> Exportar CSV
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="exportPDF">
+                                <i class="fas fa-file-pdf me-1"></i> Exportar PDF
+                            </button>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addEventModal">
+                            <i class="fas fa-plus me-1"></i> Novo Evento
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filtros -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <form id="filterForm" class="row g-3">
+                                    <div class="col-md-3">
+                                        <label for="filterStatus" class="form-label">Status</label>
+                                        <select class="form-select" id="filterStatus">
+                                            <option value="">Todos</option>
+                                            <option value="agendado">Agendado</option>
+                                            <option value="concluido">Concluído</option>
+                                            <option value="cancelado">Cancelado</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="filterCongregacao" class="form-label">Congregação</label>
+                                        <select class="form-select" id="filterCongregacao">
+                                            <option value="">Todas</option>
+                                            <!-- Opções serão carregadas via JavaScript -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="filterMinisterio" class="form-label">Ministério</label>
+                                        <select class="form-select" id="filterMinisterio">
+                                            <option value="">Todos</option>
+                                            <!-- Opções serão carregadas via JavaScript -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="filterData" class="form-label">Data</label>
+                                        <input type="date" class="form-control" id="filterData">
+                                    </div>
+                                    <div class="col-12 text-end">
+                                        <button type="button" class="btn btn-secondary" id="clearFilters">Limpar Filtros</button>
+                                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabela de Eventos -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Título</th>
+                                                <th>Data</th>
+                                                <th>Hora</th>
+                                                <th>Congregação</th>
+                                                <th>Ministério</th>
+                                                <th>Participantes</th>
+                                                <th>Status</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="eventosTable">
+                                            <!-- Dados serão carregados via JavaScript -->
+                                            <tr>
+                                                <td colspan="8" class="text-center">Carregando eventos...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Paginação -->
+                                <nav aria-label="Navegação de página" class="mt-4">
+                                    <ul class="pagination justify-content-center" id="eventosPagination">
+                                        <!-- Paginação será gerada via JavaScript -->
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal para Adicionar Evento -->
+    <div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="addEventModalLabel">Adicionar Novo Evento</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addEventForm">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label for="eventTitle" class="form-label">Título do Evento</label>
+                                <input type="text" class="form-control" id="eventTitle" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="eventDate" class="form-label">Data</label>
+                                <input type="date" class="form-control" id="eventDate" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="eventTime" class="form-label">Hora</label>
+                                <input type="time" class="form-control" id="eventTime" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="eventCongregacao" class="form-label">Congregação</label>
+                                <select class="form-select" id="eventCongregacao" required>
+                                    <option value="">Selecione uma congregação</option>
+                                    <!-- Opções serão carregadas via JavaScript -->
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="eventMinisterio" class="form-label">Ministério Responsável</label>
+                                <select class="form-select" id="eventMinisterio" required>
+                                    <option value="">Selecione um ministério</option>
+                                    <!-- Opções serão carregadas via JavaScript -->
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="eventParticipantes" class="form-label">Participantes</label>
+                                <select class="form-select" id="eventParticipantes" multiple>
+                                    <!-- Opções serão carregadas via JavaScript -->
+                                </select>
+                                <small class="form-text text-muted">Segure Ctrl para selecionar múltiplos participantes</small>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="eventObservacoes" class="form-label">Observações</label>
+                                <textarea class="form-control" id="eventObservacoes" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="eventStatus" class="form-label">Status</label>
+                                <select class="form-select" id="eventStatus" required>
+                                    <option value="agendado">Agendado</option>
+                                    <option value="concluido">Concluído</option>
+                                    <option value="cancelado">Cancelado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveEventBtn">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Evento -->
+    <div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editEventModalLabel">Editar Evento</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editEventForm">
+                        <input type="hidden" id="editEventId">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label for="editEventTitle" class="form-label">Título do Evento</label>
+                                <input type="text" class="form-control" id="editEventTitle" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editEventDate" class="form-label">Data</label>
+                                <input type="date" class="form-control" id="editEventDate" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editEventTime" class="form-label">Hora</label>
+                                <input type="time" class="form-control" id="editEventTime" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editEventCongregacao" class="form-label">Congregação</label>
+                                <select class="form-select" id="editEventCongregacao" required>
+                                    <option value="">Selecione uma congregação</option>
+                                    <!-- Opções serão carregadas via JavaScript -->
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editEventMinisterio" class="form-label">Ministério Responsável</label>
+                                <select class="form-select" id="editEventMinisterio" required>
+                                    <option value="">Selecione um ministério</option>
+                                    <!-- Opções serão carregadas via JavaScript -->
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="editEventParticipantes" class="form-label">Participantes</label>
+                                <select class="form-select" id="editEventParticipantes" multiple>
+                                    <!-- Opções serão carregadas via JavaScript -->
+                                </select>
+                                <small class="form-text text-muted">Segure Ctrl para selecionar múltiplos participantes</small>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="editEventObservacoes" class="form-label">Observações</label>
+                                <textarea class="form-control" id="editEventObservacoes" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editEventStatus" class="form-label">Status</label>
+                                <select class="form-select" id="editEventStatus" required>
+                                    <option value="agendado">Agendado</option>
+                                    <option value="concluido">Concluído</option>
+                                    <option value="cancelado">Cancelado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger me-auto" id="deleteEventBtn">Excluir</button>
+                    <button type="button" class="btn btn-primary" id="updateEventBtn">Atualizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">Confirmar Exclusão</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja excluir este evento? Esta ação não pode ser desfeita.</p>
+                    <input type="hidden" id="deleteEventId">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Visualização de Evento -->
+    <div class="modal fade" id="viewEventModal" tabindex="-1" aria-labelledby="viewEventModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="viewEventModalLabel">Detalhes do Evento</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Título:</strong> <span id="viewEventTitle"></span></p>
+                            <p><strong>Data:</strong> <span id="viewEventDate"></span></p>
+                            <p><strong>Hora:</strong> <span id="viewEventTime"></span></p>
+                            <p><strong>Congregação:</strong> <span id="viewEventCongregacao"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Ministério:</strong> <span id="viewEventMinisterio"></span></p>
+                            <p><strong>Status:</strong> <span id="viewEventStatus"></span></p>
+                            <p><strong>Criado em:</strong> <span id="viewEventCreatedAt"></span></p>
+                        </div>
+                        <div class="col-md-12 mt-3">
+                            <p><strong>Observações:</strong></p>
+                            <p id="viewEventObservacoes" class="border p-2 rounded bg-light"></p>
+                        </div>
+                        <div class="col-md-12 mt-3">
+                            <p><strong>Participantes:</strong></p>
+                            <ul id="viewEventParticipantes" class="list-group">
+                                <!-- Lista de participantes será carregada via JavaScript -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" id="editEventFromViewBtn">Editar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="container text-center">
+            <span class="text-muted">© 2025 CCB Administração Ituiutaba. Todos os direitos reservados.</span>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle com Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Firebase App (a base) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <!-- Firebase Auth -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <!-- Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <!-- Scripts personalizados -->
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/events.js"></script>
+</body>
+</html>
