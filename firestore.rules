@@ -1,0 +1,117 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Função para verificar se o usuário está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Função para verificar se o usuário é admin
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.admin == true;
+    }
+    
+    // Função para verificar se o usuário é dirigente
+    function isDirigente() {
+      return isAuthenticated() && (request.auth.token.dirigente == true || isAdmin());
+    }
+    
+    // Função para verificar se o usuário é obreiro
+    function isObreiro() {
+      return isAuthenticated() && (request.auth.token.obreiro == true || isDirigente());
+    }
+    
+    // Função para verificar se o usuário é membro do ministério
+    function isMinisterioMember(ministerioId) {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/ministerios/$(ministerioId)/membros/$(request.auth.uid));
+    }
+    
+    // Função para verificar se o usuário é o responsável pelo ministério
+    function isMinisterioResponsavel(ministerioData) {
+      return isAuthenticated() && ministerioData.responsavelUid == request.auth.uid;
+    }
+    
+    // Regras para coleção de usuários
+    match /users/{userId} {
+      // Qualquer usuário autenticado pode ler dados de usuários
+      allow read: if isAuthenticated();
+      
+      // Usuários podem editar apenas seus próprios dados
+      // Admins podem editar dados de qualquer usuário
+      allow write: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      
+      // Apenas admins podem excluir usuários
+      allow delete: if isAdmin();
+    }
+    
+    // Regras para coleção de ministérios
+    match /ministerios/{ministerioId} {
+      // Qualquer usuário autenticado pode ler ministérios
+      allow read: if isAuthenticated();
+      
+      // Apenas dirigentes e admins podem criar ministérios
+      allow create: if isDirigente();
+      
+      // Apenas o responsável pelo ministério, dirigentes e admins podem editar
+      allow update: if isDirigente() || isMinisterioResponsavel(resource.data);
+      
+      // Apenas dirigentes e admins podem excluir ministérios
+      allow delete: if isDirigente();
+      
+      // Subcoleção de membros do ministério
+      match /membros/{membroId} {
+        allow read: if isAuthenticated();
+        allow write: if isDirigente() || 
+                      isMinisterioResponsavel(get(/databases/$(database)/documents/ministerios/$(ministerioId)).data);
+      }
+    }
+    
+    // Regras para coleção de congregações
+    match /congregacoes/{congregacaoId} {
+      // Qualquer usuário autenticado pode ler congregações
+      allow read: if isAuthenticated();
+      
+      // Apenas dirigentes e admins podem criar, editar ou excluir congregações
+      allow create, update, delete: if isDirigente();
+    }
+    
+    // Regras para coleção de eventos
+    match /eventos/{eventoId} {
+      // Qualquer usuário autenticado pode ler eventos
+      allow read: if isAuthenticated();
+      
+      // Obreiros, dirigentes e admins podem criar eventos
+      allow create: if isObreiro();
+      
+      // Apenas o responsável pelo ministério do evento, dirigentes e admins podem editar
+      allow update: if isDirigente() || 
+                     (resource.data.ministerioId != null && 
+                      isMinisterioResponsavel(get(/databases/$(database)/documents/ministerios/$(resource.data.ministerioId)).data));
+      
+      // Apenas dirigentes e admins podem excluir eventos
+      allow delete: if isDirigente();
+      
+      // Subcoleção de participantes do evento
+      match /participantes/{participanteId} {
+        allow read: if isAuthenticated();
+        allow write: if isObreiro();
+      }
+    }
+    
+    // Regras para coleção de coletas
+    match /coletas/{coletaId} {
+      // Qualquer usuário autenticado pode ler coletas
+      allow read: if isAuthenticated();
+      
+      // Obreiros, dirigentes e admins podem criar coletas
+      allow create: if isObreiro();
+      
+      // Apenas dirigentes e admins podem editar coletas
+      allow update: if isDirigente();
+      
+      // Apenas dirigentes e admins podem excluir coletas
+      allow delete: if isDirigente();
+    }
+  }
+}
